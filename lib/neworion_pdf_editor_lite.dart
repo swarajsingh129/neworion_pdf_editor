@@ -6,10 +6,30 @@ import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class OPdf {
-  static Future<File?> openEditor(BuildContext context, File pdfFile) async {
+  static Future<File?> openEditor(
+    BuildContext context,
+    File pdfFile, {
+    bool draw = true,
+    bool text = true,
+    bool highlight = true,
+    bool underline = true,
+    bool image = true,
+    bool page = true,
+  }) async {
     File? result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => OPdfEditScreen(pdfFile: pdfFile)),
+      MaterialPageRoute(
+        builder:
+            (context) => OPdfEditScreen(
+              pdfFile: pdfFile,
+              draw: draw,
+              text: text,
+              highlight: highlight,
+              underline: underline,
+              image: image,
+              page: page,
+            ),
+      ),
     );
     return result;
   }

@@ -29,37 +29,6 @@ class DrawingController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // void addTextBox() {
-  //   _textBoxes[_currentPage] ??= [];
-  //   TextBox newTextBox = TextBox("New Text", Offset(100, 100));
-  //   _textBoxes[_currentPage]!.add(newTextBox);
-  //   _history[_currentPage]!.add(TextBoxAction(newTextBox, isAdd: true));
-  //   notifyListeners();
-  // }
-
-  // void removeTextBox(TextBox textBox) {
-  //   _textBoxes[_currentPage]?.remove(textBox);
-  //   _history[_currentPage]!.add(TextBoxAction(textBox, isAdd: false));
-  //   notifyListeners();
-  // }
-
-  // void selectTextBox(Offset tapPosition) {
-  //   for (TextBox textBox in _textBoxes[_currentPage] ?? []) {
-  //     Rect textBoxRect = Rect.fromLTWH(
-  //       textBox.position.dx,
-  //       textBox.position.dy,
-  //       textBox.width,
-  //       textBox.height,
-  //     );
-
-  //     if (textBoxRect.contains(tapPosition)) {
-  //       // Do something when a text box is selected, like highlighting or allowing drag
-  //       notifyListeners();
-  //       return;
-  //     }
-  //   }
-  // }
-
   void startDraw(Offset startPoint) {
     _history.putIfAbsent(_currentPage, () => []);
     _undoStack.putIfAbsent(_currentPage, () => []);
@@ -143,6 +112,14 @@ class DrawingController extends ChangeNotifier {
     notifyListeners();
   }
 
+  clearAllPages() {
+    _history.clear();
+    _undoStack.clear();
+    _textBoxes.clear();
+    setPage(0);
+    notifyListeners();
+  }
+
   Future<ByteData?> getImageData(int page) async {
     try {
       final RenderRepaintBoundary boundary =
@@ -156,11 +133,12 @@ class DrawingController extends ChangeNotifier {
       final ui.PictureRecorder recorder = ui.PictureRecorder();
       final Canvas canvas = Canvas(recorder);
 
-      final double height = originalImage.height.toDouble();
-
-      // Flip vertically: Translate and scale
-      canvas.translate(0, height);
-      canvas.scale(1, -1); // Only invert Y-axis
+      //  final double height = originalImage.height.toDouble();
+      //       // Flip vertically: Translate and scale
+      //       if (Platform.isAndroid) {
+      //         canvas.translate(0, height);
+      //         canvas.scale(1, -1);
+      //       } // Only invert Y-axis
 
       // Draw the original image onto the flipped canvas
       final Paint paint = Paint();
@@ -182,6 +160,67 @@ class DrawingController extends ChangeNotifier {
 
   Map<int, List<PaintContent>> getAllDrawings() {
     return _history;
+  }
+
+   adjustPages(int pageIndex, {bool isAdd = true}) async{
+    final newHistory = <int, List<PaintContent>>{};
+    final newUndoStack = <int, List<PaintContent>>{};
+    final newTextBoxes = <int, List<TextBox>>{};
+    _history.forEach((key, value) {
+      if (isAdd) {
+        newHistory[key >= pageIndex ? key + 1 : key] = value;
+      } else {
+        if (key == pageIndex) {
+          // Removed page, skip it
+        } else {
+          newHistory[key > pageIndex ? key - 1 : key] = value;
+        }
+      }
+    });
+
+    _undoStack.forEach((key, value) {
+      if (isAdd) {
+        newUndoStack[key >= pageIndex ? key + 1 : key] = value;
+      } else {
+        if (key == pageIndex) {
+          // Removed page, skip it
+        } else {
+          newUndoStack[key > pageIndex ? key - 1 : key] = value;
+        }
+      }
+    });
+
+    _textBoxes.forEach((key, value) {
+      if (isAdd) {
+        newTextBoxes[key >= pageIndex ? key + 1 : key] = value;
+      } else {
+        if (key == pageIndex) {
+          // Removed page, skip it
+        } else {
+          newTextBoxes[key > pageIndex ? key - 1 : key] = value;
+        }
+      }
+    });
+
+    // Replace old maps with adjusted ones
+    _history
+      ..clear()
+      ..addAll(newHistory);
+    _undoStack
+      ..clear()
+      ..addAll(newUndoStack);
+    _textBoxes
+      ..clear()
+      ..addAll(newTextBoxes);
+
+    // Adjust current page index if needed
+    if (!isAdd && _currentPage > pageIndex) {
+      _currentPage -= 1;
+    } else if (isAdd && _currentPage >= pageIndex) {
+      _currentPage += 1;
+    }
+
+    notifyListeners();
   }
 }
 

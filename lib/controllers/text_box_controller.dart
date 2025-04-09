@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:neworion_pdf_editor_lite/controllers/drawingController.dart';
-
+import 'package:neworion_pdf_editor_lite/controllers/drawing_controller.dart';
 
 class TextBoxController extends ChangeNotifier {
   final Map<int, List<TextBox>> _textBoxes = {};
@@ -111,10 +110,81 @@ class TextBoxController extends ChangeNotifier {
     _undoStack[_currentPage] = [];
     notifyListeners();
   }
+
   bool hasClearContent() {
     return _history[_currentPage]?.isNotEmpty == true ||
         _textBoxes[_currentPage]?.isNotEmpty == true ||
         _undoStack[_currentPage]?.isNotEmpty == true;
+  }
+
+  clearAllPages() {
+    _history.clear();
+    _undoStack.clear();
+    _textBoxes.clear();
+    setPage(0);
+    notifyListeners();
+  }
+
+   adjustPages(int pageIndex, {bool isAdd = true}) async{
+    final newTextBoxes = <int, List<TextBox>>{};
+    final newHistory = <int, List<TextBoxAction>>{};
+    final newUndoStack = <int, List<TextBoxAction>>{};
+
+    _textBoxes.forEach((key, value) {
+      if (isAdd) {
+        newTextBoxes[key >= pageIndex ? key + 1 : key] = value;
+      } else {
+        if (key == pageIndex) {
+          // Skip deleted page
+        } else {
+          newTextBoxes[key > pageIndex ? key - 1 : key] = value;
+        }
+      }
+    });
+
+    _history.forEach((key, value) {
+      if (isAdd) {
+        newHistory[key >= pageIndex ? key + 1 : key] = value;
+      } else {
+        if (key == pageIndex) {
+          // Skip deleted page
+        } else {
+          newHistory[key > pageIndex ? key - 1 : key] = value;
+        }
+      }
+    });
+
+    _undoStack.forEach((key, value) {
+      if (isAdd) {
+        newUndoStack[key >= pageIndex ? key + 1 : key] = value;
+      } else {
+        if (key == pageIndex) {
+          // Skip deleted page
+        } else {
+          newUndoStack[key > pageIndex ? key - 1 : key] = value;
+        }
+      }
+    });
+
+    // Replace with updated maps
+    _textBoxes
+      ..clear()
+      ..addAll(newTextBoxes);
+    _history
+      ..clear()
+      ..addAll(newHistory);
+    _undoStack
+      ..clear()
+      ..addAll(newUndoStack);
+
+    // Adjust current page if needed
+    if (!isAdd && _currentPage > pageIndex) {
+      _currentPage -= 1;
+    } else if (isAdd && _currentPage >= pageIndex) {
+      _currentPage += 1;
+    }
+
+    notifyListeners();
   }
 }
 
