@@ -1,6 +1,11 @@
 📄 neworion_pdf_editor
 A powerful Flutter PDF editor that enables you to draw, highlight, underline, add text or images, and save changes back to the PDF — all with an intuitive UI. Built on top of Syncfusion's PDF Viewer and PDF libraries, this editor is ideal for creating note-taking, document review, or annotation apps.
 
+
+<a href="https://buymeacoffee.com/swarajsingo" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="50" width="210" >
+</a>
+
 ✨ Platform support: Android and iOS only.
 
 <p align="center">
@@ -68,4 +73,6 @@ Here's a working example:
     
   
 
+## Support
 
+If you find this package useful, consider supporting me on [Buy Me a Coffee](https://buymeacoffee.com/swarajsingo)!
