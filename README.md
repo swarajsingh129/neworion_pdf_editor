@@ -1,39 +1,120 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+📄 neworion_pdf_editor
+A powerful Flutter PDF editor that enables you to draw, highlight, underline, add text or images, and save changes back to the PDF — all with an intuitive UI. Built on top of Syncfusion's PDF Viewer and PDF libraries, this editor is ideal for creating note-taking, document review, or annotation apps.
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+✨ Platform support: Android and iOS only.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+✨ Features
+✅ Add freehand drawings to PDFs
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+✅ Insert customizable text boxes
 
-## Features
+✅ Highlight and underline text with ease
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+✅ Insert and resize images on PDF pages
 
-## Getting started
+✅ Interactive dragging, resizing, and rotating of elements
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+✅ Page-wise undo/redo history for all changes
 
-## Usage
+✅ Save your edits back to a new PDF file
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+✅ Seamless integration with syncfusion_flutter_pdfviewer
 
-```dart
-const like = 'sample';
-```
+🚀 Getting Started
+📦 Installation
+Add this to your pubspec.yaml:
 
-## Additional information
+yaml
+Copy
+Edit
+dependencies:
+  neworion_pdf_editor: ^0.0.1
+Then run:
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+bash
+Copy
+Edit
+flutter pub get
+📂 Usage
+Here's a complete working example:
+
+dart
+Copy
+Edit
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:neworion_pdf_editor/neworion_pdf_editor.dart';
+
+void main() => runApp(const MyApp());
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'PDF Editor Demo',
+      home: const PDFEditorScreen(),
+    );
+  }
+}
+
+class PDFEditorScreen extends StatefulWidget {
+  const PDFEditorScreen({super.key});
+  @override
+  State<PDFEditorScreen> createState() => _PDFEditorScreenState();
+}
+
+class _PDFEditorScreenState extends State<PDFEditorScreen> {
+  File? _pdfFile;
+  bool _isLoading = false;
+
+  Future<void> _pickPDF() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+    );
+
+    if (result != null && result.files.single.path != null) {
+      setState(() {
+        _pdfFile = File(result.files.single.path!);
+      });
+    }
+  }
+
+  Future<void> _editPDF() async {
+    if (_pdfFile == null) return;
+
+    setState(() => _isLoading = true);
+    File? editedFile = await OPdf.openEditor(context, _pdfFile!);
+    setState(() {
+      _pdfFile = editedFile;
+      _isLoading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('PDF Editor')),
+      body: Column(
+        children: [
+          ElevatedButton(onPressed: _pickPDF, child: const Text('Pick PDF')),
+          ElevatedButton(onPressed: _editPDF, child: const Text('Edit PDF')),
+          if (_isLoading) const CircularProgressIndicator(),
+          if (_pdfFile != null && !_isLoading)
+            Expanded(child: SfPdfViewer.file(_pdfFile!)),
+        ],
+      ),
+    );
+  }
+}
+🛠️ Supported Actions
+Action	Description
+Draw	Freehand drawing with color options
+Text	Add resizable, editable text boxes
+Annotate	Highlight or underline text
+Image	Add and resize/rotate images
+Undo/Redo	Page-based undo/redo for all actions
+Save	Save annotated version of the PDF
