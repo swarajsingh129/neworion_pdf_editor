@@ -20,27 +20,30 @@ A powerful Flutter PDF editor that enables you to draw, highlight, underline, ad
 
 ✅ Seamless integration with syncfusion_flutter_pdfviewer
 
+
+🛠️ What You Can Do
+✏️ Action	💬 Description
+Draw	Freehand drawing with custom colors
+Add Text	Insert and move text boxes
+Highlight	Highlight important content
+Underline	Underline sections of interest
+Insert Image	Add and reposition images in PDF
+Undo/Redo	Per-page undo/redo for all actions
+Save PDF	Save all edits to a new PDF file
+
 🚀 Getting Started
 📦 Installation
 Add this to your pubspec.yaml:
 
-yaml
-Copy
-Edit
 dependencies:
   neworion_pdf_editor: ^0.0.1
-Then run:
 
-bash
-Copy
-Edit
+Then run:
 flutter pub get
+
 📂 Usage
 Here's a complete working example:
 
-dart
-Copy
-Edit
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -110,11 +113,5 @@ class _PDFEditorScreenState extends State<PDFEditorScreen> {
     );
   }
 }
-🛠️ Supported Actions
-Action	Description
-Draw	Freehand drawing with color options
-Text	Add resizable, editable text boxes
-Annotate	Highlight or underline text
-Image	Add and resize/rotate images
-Undo/Redo	Page-based undo/redo for all actions
-Save	Save annotated version of the PDF
+
+
