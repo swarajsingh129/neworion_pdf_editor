@@ -37,7 +37,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   File? _pdfFile; // The selected or edited PDF file
   bool _isLoading = false; // Controls loading indicator
-  final PdfViewerController _pdfViewerController = PdfViewerController(); // Controls PDF viewer
+  final PdfViewerController _pdfViewerController =
+      PdfViewerController(); // Controls PDF viewer
 
   /// Allows the user to pick a PDF file from device storage
   Future<void> _pickPDF() async {
@@ -78,35 +79,30 @@ class _MyHomePageState extends State<MyHomePage> {
           const SizedBox(height: 20),
 
           // Button to pick PDF
-          ElevatedButton(
-            onPressed: _pickPDF,
-            child: const Text('Pick PDF'),
-          ),
+          ElevatedButton(onPressed: _pickPDF, child: const Text('Pick PDF')),
 
           const SizedBox(height: 10),
 
           // Button to open the editor
-          ElevatedButton(
-            onPressed: _editPDF,
-            child: const Text('Edit PDF'),
-          ),
+          ElevatedButton(onPressed: _editPDF, child: const Text('Edit PDF')),
 
           const SizedBox(height: 20),
 
           // Show loading or PDF preview
           Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _pdfFile == null
+            child:
+                _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _pdfFile == null
                     ? const Center(child: Text('No PDF selected'))
                     : SfPdfViewer.file(
-                        _pdfFile!,
-                        controller: _pdfViewerController,
-                        canShowPaginationDialog: true,
-                        pageLayoutMode: PdfPageLayoutMode.single,
-                        canShowScrollHead: true,
-                        canShowScrollStatus: true,
-                      ),
+                      _pdfFile!,
+                      controller: _pdfViewerController,
+                      canShowPaginationDialog: true,
+                      pageLayoutMode: PdfPageLayoutMode.single,
+                      canShowScrollHead: true,
+                      canShowScrollStatus: true,
+                    ),
           ),
         ],
       ),
