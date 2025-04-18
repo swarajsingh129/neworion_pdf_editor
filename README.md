@@ -2,9 +2,11 @@
 
 A powerful Flutter PDF editor that enables you to draw, highlight, underline, add text or images, and save changes back to the PDF — all with an intuitive UI. Built on top of Syncfusion's PDF Viewer and PDF libraries, this editor is ideal for creating note-taking, document review, or annotation apps.
 
-<a href="https://buymeacoffee.com/swarajsingo" target="_blank">
-  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="50" width="210" >
-</a>
+<p align="center">
+  <a href="https://buymeacoffee.com/swarajsingo" target="_blank">
+    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="60" width="250" >
+  </a>
+</p>
 
 ✨ Platform support: Android and iOS only.
 
@@ -43,6 +45,8 @@ A powerful Flutter PDF editor that enables you to draw, highlight, underline, ad
 
 ✅ Seamless integration with syncfusion_flutter_pdfviewer
 
+
+
 🚀 Getting Started
 📦 Installation
 Add this to your pubspec.yaml:
@@ -66,6 +70,20 @@ Here's a working example:
     });
     }
 
+## Author
+
+👨‍💻 **Swaraj Singh**  
+📧 linkedIn: https://www.linkedin.com/in/swarajsingh129/ 
+🌐 TopMate: https://topmate.io/swaraj_singh_129
+
+
+
 ## Support
+
+<p align="center">
+  <a href="https://buymeacoffee.com/swarajsingo" target="_blank">
+    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="60" width="250" >
+  </a>
+</p>
 
 If you find this package useful, consider supporting me on [Buy Me a Coffee](https://buymeacoffee.com/swarajsingo)!
