@@ -1,6 +1,6 @@
 name: neworion_pdf_editor
 description: A lightweight, feature-rich PDF editing toolkit for Flutter. Supports text, drawing, image addition, and annotations.
-version: 0.0.2
+version: 0.0.3
 repository: https://github.com/yourusername/neworion_pdf_editor
 license: BSD-3-Clause
 

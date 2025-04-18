@@ -4,8 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [0.0.2] - 2025-04-18
+## [0.0.3] - 2025-04-18
 
+### Changed
+- **Code Formatting**: Refactored and reformatted the codebase for better readability and consistency. No functional changes were made, and the behavior of the package remains the same.
+
+## [0.0.2] - 2025-04-18
 
 ### Fixed
 - **Drawing History**: Fixed a bug related to saving and recalling drawing annotations, ensuring that the drawing state is correctly restored across sessions.
