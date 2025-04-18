@@ -5,14 +5,11 @@ import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 ///
 /// [highlight] - Highlights the selected text.
 /// [underline] - Underlines the selected text.
-enum AnnotationType { 
-  highlight, 
-  underline 
-}
+enum AnnotationType { highlight, underline }
 
 /// Represents an action performed on an annotation.
 ///
-/// Used for managing annotation history, undo/redo operations, and 
+/// Used for managing annotation history, undo/redo operations, and
 /// distinguishing between adding or removing annotations.
 class AnnotationAction {
   /// The annotation widget or object related to this action.
@@ -24,7 +21,7 @@ class AnnotationAction {
   /// Flag to indicate whether the action is an addition (`true`) or removal (`false`).
   final bool isAdd;
 
-  /// List of corresponding [PdfTextMarkupAnnotation] objects 
+  /// List of corresponding [PdfTextMarkupAnnotation] objects
   /// created or affected during this action.
   final List<PdfTextMarkupAnnotation> pdfAnnotation;
 

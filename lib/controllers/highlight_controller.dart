@@ -2,9 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:neworion_pdf_editor/controllers/annotation_controller.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
-/// A controller that manages highlight and underline annotations 
+/// A controller that manages highlight and underline annotations
 /// in a PDF document using the Syncfusion PDF viewer.
-/// 
+///
 /// Supports undo/redo operations, page-based history, and dynamic page adjustments.
 class HighlightController extends ChangeNotifier {
   /// Stores the annotation history per page.
@@ -102,7 +102,7 @@ class HighlightController extends ChangeNotifier {
   }
 
   /// Adjusts the highlight and undo stacks when pages are added or removed.
-  /// 
+  ///
   /// [pageIndex] - The index where the page was added or removed.
   /// [isAdd] - Whether a page was added (true) or removed (false).
   Future<void> adjustPages(

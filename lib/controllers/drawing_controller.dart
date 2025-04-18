@@ -10,10 +10,10 @@ class DrawingController extends ChangeNotifier {
   final Map<int, List<TextBox>> _textBoxes = {};
   final Map<int, List<PaintContent>> _history = {};
   final Map<int, List<PaintContent>> _undoStack = {};
-  
+
   /// Global key for accessing the repaint boundary for image capturing.
   final GlobalKey painterKey = GlobalKey();
-  
+
   int _currentPage = 0;
 
   /// Returns the list of drawing history for the current page.
@@ -122,7 +122,8 @@ class DrawingController extends ChangeNotifier {
   Future<ByteData?> getImageData(int page) async {
     try {
       final RenderRepaintBoundary boundary =
-          painterKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+          painterKey.currentContext!.findRenderObject()!
+              as RenderRepaintBoundary;
       final ui.Image originalImage = await boundary.toImage(pixelRatio: 3.0);
 
       final ui.PictureRecorder recorder = ui.PictureRecorder();
@@ -225,10 +226,11 @@ class SimpleLine extends PaintContent {
 
   @override
   void paintOnCanvas(Canvas canvas) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 3
-      ..style = PaintingStyle.stroke;
+    final paint =
+        Paint()
+          ..color = color
+          ..strokeWidth = 3
+          ..style = PaintingStyle.stroke;
     for (int i = 0; i < points.length - 1; i++) {
       canvas.drawLine(points[i], points[i + 1], paint);
     }

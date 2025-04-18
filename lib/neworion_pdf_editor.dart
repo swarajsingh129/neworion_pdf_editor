@@ -7,7 +7,6 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 // Class to handle PDF editing actions
 class OPdf {
-  
   // Open the PDF editor screen with various options for editing
   static Future<File?> openEditor(
     BuildContext context,
@@ -25,13 +24,13 @@ class OPdf {
       MaterialPageRoute(
         builder:
             (context) => OPdfEditScreen(
-              pdfFile: pdfFile,  // The PDF file to edit
-              draw: draw,        // Option to allow drawing
-              text: text,        // Option to allow text editing
-              highlight: highlight,  // Option to allow highlighting
-              underline: underline,  // Option to allow underlining
-              image: image,      // Option to allow image editing
-              page: page,        // Option to allow page navigation
+              pdfFile: pdfFile, // The PDF file to edit
+              draw: draw, // Option to allow drawing
+              text: text, // Option to allow text editing
+              highlight: highlight, // Option to allow highlighting
+              underline: underline, // Option to allow underlining
+              image: image, // Option to allow image editing
+              page: page, // Option to allow page navigation
             ),
       ),
     );
@@ -79,14 +78,14 @@ class OPdf {
       // Get the application's document directory and create a new file path for the edited PDF
       final directory = await getApplicationDocumentsDirectory();
       final File newPdf = File('${directory.path}/edited.pdf');
-      
+
       // Write the modified PDF to the new file
       await newPdf.writeAsBytes(bytes);
 
       // Open the saved PDF (optional, currently commented out)
       // OpenFile.open(newPdf.path);
 
-      return newPdf;  // Return the new file
+      return newPdf; // Return the new file
     } catch (e) {
       // If an error occurs, print it and return null
       log("Error editing PDF: $e");

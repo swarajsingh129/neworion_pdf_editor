@@ -34,9 +34,14 @@ class TextBoxController extends ChangeNotifier {
   /// Adds a new text box on the current page and records the action in history.
   TextBox? addTextBox() {
     _textBoxes[_currentPage] ??= [];
-    TextBox newTextBox = TextBox("New Text", Offset(100, 100)); // Default position and text.
+    TextBox newTextBox = TextBox(
+      "New Text",
+      Offset(100, 100),
+    ); // Default position and text.
     _textBoxes[_currentPage]!.add(newTextBox);
-    _history[_currentPage]!.add(TextBoxAction(newTextBox, isAdd: true)); // Record action.
+    _history[_currentPage]!.add(
+      TextBoxAction(newTextBox, isAdd: true),
+    ); // Record action.
     notifyListeners(); // Notify listeners about the change.
     return newTextBox;
   }
@@ -44,7 +49,9 @@ class TextBoxController extends ChangeNotifier {
   /// Removes a text box from the current page and records the action in history.
   void removeTextBox(TextBox textBox) {
     _textBoxes[_currentPage]?.remove(textBox);
-    _history[_currentPage]!.add(TextBoxAction(textBox, isAdd: false)); // Record action.
+    _history[_currentPage]!.add(
+      TextBoxAction(textBox, isAdd: false),
+    ); // Record action.
     notifyListeners(); // Notify listeners.
   }
 
@@ -82,8 +89,14 @@ class TextBoxController extends ChangeNotifier {
   void resizeTextBox(TextBox textBox, Offset delta) {
     textBox.width += delta.dx;
     textBox.height += delta.dy;
-    textBox.width = textBox.width.clamp(20, double.infinity); // Min width of 20.
-    textBox.height = textBox.height.clamp(20, double.infinity); // Min height of 20.
+    textBox.width = textBox.width.clamp(
+      20,
+      double.infinity,
+    ); // Min width of 20.
+    textBox.height = textBox.height.clamp(
+      20,
+      double.infinity,
+    ); // Min height of 20.
     notifyListeners(); // Notify listeners after resizing.
   }
 
@@ -94,9 +107,13 @@ class TextBoxController extends ChangeNotifier {
       _undoStack[_currentPage]!.add(lastAction);
 
       if (lastAction.isAdd) {
-        _textBoxes[_currentPage]?.remove(lastAction.textBox); // Remove added text box.
+        _textBoxes[_currentPage]?.remove(
+          lastAction.textBox,
+        ); // Remove added text box.
       } else {
-        _textBoxes[_currentPage]?.add(lastAction.textBox); // Re-add removed text box.
+        _textBoxes[_currentPage]?.add(
+          lastAction.textBox,
+        ); // Re-add removed text box.
       }
       notifyListeners(); // Notify listeners after undo.
     }
@@ -111,7 +128,9 @@ class TextBoxController extends ChangeNotifier {
       if (lastAction.isAdd) {
         _textBoxes[_currentPage]?.add(lastAction.textBox); // Re-add text box.
       } else {
-        _textBoxes[_currentPage]?.remove(lastAction.textBox); // Remove text box.
+        _textBoxes[_currentPage]?.remove(
+          lastAction.textBox,
+        ); // Remove text box.
       }
       notifyListeners(); // Notify listeners after redo.
     }
@@ -120,9 +139,11 @@ class TextBoxController extends ChangeNotifier {
   /// Checks if there is any content in history or text boxes for the current page.
   bool hasContent({bool isRedo = false}) {
     return isRedo
-        ? _undoStack[_currentPage]?.isNotEmpty == true // Check redo stack.
+        ? _undoStack[_currentPage]?.isNotEmpty ==
+            true // Check redo stack.
         : _history[_currentPage]?.isNotEmpty == true ||
-            _textBoxes[_currentPage]?.isNotEmpty == true; // Check history or text boxes.
+            _textBoxes[_currentPage]?.isNotEmpty ==
+                true; // Check history or text boxes.
   }
 
   /// Clears all content (text boxes, history, undo stack) for the current page.

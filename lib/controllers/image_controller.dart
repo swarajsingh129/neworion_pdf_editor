@@ -4,8 +4,10 @@ import 'dart:ui' as ui;
 /// Controller to manage image addition, removal, undo/redo, and page adjustments.
 class ImageController extends ChangeNotifier {
   final Map<int, List<ImageBox>> _imageBoxes = {}; // Stores images per page
-  final Map<int, List<ImageAction>> _history = {}; // History for undo operations
-  final Map<int, List<ImageAction>> _undoStack = {}; // Stack for redo operations
+  final Map<int, List<ImageAction>> _history =
+      {}; // History for undo operations
+  final Map<int, List<ImageAction>> _undoStack =
+      {}; // Stack for redo operations
 
   int _currentPage = 0;
 

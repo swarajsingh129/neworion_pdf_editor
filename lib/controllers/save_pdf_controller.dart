@@ -16,7 +16,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 /// A controller responsible for handling all save and manipulation
-/// operations on a PDF, including drawing, annotations, text boxes, 
+/// operations on a PDF, including drawing, annotations, text boxes,
 /// images, adding/removing pages, and saving the final document.
 class SavePdfController extends ChangeNotifier {
   /// Tracks whether a save operation is currently in progress.
@@ -28,8 +28,8 @@ class SavePdfController extends ChangeNotifier {
   /// [pdfFile] - the original PDF file,
   /// [totalPages] - number of pages in the document,
   /// [context] - BuildContext for getting MediaQuery,
-  /// [drawingController], [imageController], [textBoxController], 
-  /// [highlightController], [underlineController] - various controllers 
+  /// [drawingController], [imageController], [textBoxController],
+  /// [highlightController], [underlineController] - various controllers
   /// managing different edit types,
   /// [refresh] - callback to refresh UI if needed.
   Future<void> saveDrawing({
