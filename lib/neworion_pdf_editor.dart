@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:neworion_pdf_editor/neworion_pdf_edit_screen.dart';
@@ -88,7 +89,7 @@ class OPdf {
       return newPdf;  // Return the new file
     } catch (e) {
       // If an error occurs, print it and return null
-      print("Error editing PDF: $e");
+      log("Error editing PDF: $e");
       return null;
     }
   }

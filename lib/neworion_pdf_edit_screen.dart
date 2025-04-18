@@ -74,7 +74,7 @@ class _OPdfEditScreenState extends State<OPdfEditScreen> {
   int _totalPages = 1;
 
   /// The list of points used for drawing annotations.
-  List<Offset?> _points = [];
+  final List<Offset?> _points = [];
 
   /// Flag to check if the PDF page has been loaded.
   bool _isPageLoaded = false;
