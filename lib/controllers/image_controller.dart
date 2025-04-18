@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
+/// Controller to manage image addition, removal, undo/redo, and page adjustments.
 class ImageController extends ChangeNotifier {
-  final Map<int, List<ImageBox>> _imageBoxes = {};
-  final Map<int, List<ImageAction>> _history = {};
-  final Map<int, List<ImageAction>> _undoStack = {};
+  final Map<int, List<ImageBox>> _imageBoxes = {}; // Stores images per page
+  final Map<int, List<ImageAction>> _history = {}; // History for undo operations
+  final Map<int, List<ImageAction>> _undoStack = {}; // Stack for redo operations
+
   int _currentPage = 0;
-  // Get images for the current page
+
+  /// Get images for the current page
   List<ImageBox> getImageBoxes() => _imageBoxes[_currentPage] ?? [];
+
+  /// Get all images for all pages
   Map<int, List<ImageBox>> getAllImageBoxes() => _imageBoxes;
 
-  // Set current page
+  /// Set the current page and initialize its data if not already present
   void setPage(int page) {
     _currentPage = page;
     _imageBoxes.putIfAbsent(page, () => []);
@@ -19,7 +24,7 @@ class ImageController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Add image to the current page
+  /// Add an image to the current page
   void addImage(ui.Image image) {
     double aspectRatio = image.width / image.height;
     double width = 150; // Default width
@@ -31,19 +36,20 @@ class ImageController extends ChangeNotifier {
       width: width,
       height: height,
     );
+
     _imageBoxes[_currentPage]!.add(newImageBox);
     _history[_currentPage]!.add(ImageAction(newImageBox, isAdd: true));
     notifyListeners();
   }
 
-  // Remove image
+  /// Remove an image from the current page
   void removeImage(ImageBox imageBox) {
     _imageBoxes[_currentPage]?.remove(imageBox);
     _history[_currentPage]!.add(ImageAction(imageBox, isAdd: false));
     notifyListeners();
   }
 
-  // Undo last action
+  /// Undo the last image action
   void undo() {
     if (_history[_currentPage]?.isNotEmpty == true) {
       var lastAction = _history[_currentPage]!.removeLast();
@@ -58,7 +64,7 @@ class ImageController extends ChangeNotifier {
     }
   }
 
-  // Redo last undone action
+  /// Redo the last undone image action
   void redo() {
     if (_undoStack[_currentPage]?.isNotEmpty == true) {
       var lastAction = _undoStack[_currentPage]!.removeLast();
@@ -73,14 +79,14 @@ class ImageController extends ChangeNotifier {
     }
   }
 
-  // Check if content is available
+  /// Check if there is content available for undo/redo
   bool hasContent({bool isRedo = false}) {
     return isRedo
         ? _undoStack[_currentPage]?.isNotEmpty == true
         : _history[_currentPage]?.isNotEmpty == true;
   }
 
-  // Clear all image actions
+  /// Clear all images and actions on the current page
   void clear() {
     _imageBoxes[_currentPage]?.clear();
     _history[_currentPage]?.clear();
@@ -88,13 +94,15 @@ class ImageController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Check if clearable content exists
   bool hasClearContent() {
     return _history[_currentPage]?.isNotEmpty == true ||
         _imageBoxes[_currentPage]?.isNotEmpty == true ||
         _undoStack[_currentPage]?.isNotEmpty == true;
   }
 
-  clearAllPages() {
+  /// Clear all pages and reset controller
+  void clearAllPages() {
     _imageBoxes.clear();
     _history.clear();
     _undoStack.clear();
@@ -102,7 +110,8 @@ class ImageController extends ChangeNotifier {
     notifyListeners();
   }
 
-  adjustPages(int pageIndex, {bool isAdd = true}) async {
+  /// Adjust image mappings when a page is added or removed
+  Future<void> adjustPages(int pageIndex, {bool isAdd = true}) async {
     final newImageBoxes = <int, List<ImageBox>>{};
     final newHistory = <int, List<ImageAction>>{};
     final newUndoStack = <int, List<ImageAction>>{};
@@ -111,9 +120,7 @@ class ImageController extends ChangeNotifier {
       if (isAdd) {
         newImageBoxes[key >= pageIndex ? key + 1 : key] = value;
       } else {
-        if (key == pageIndex) {
-          // Skip deleted page
-        } else {
+        if (key != pageIndex) {
           newImageBoxes[key > pageIndex ? key - 1 : key] = value;
         }
       }
@@ -123,9 +130,7 @@ class ImageController extends ChangeNotifier {
       if (isAdd) {
         newHistory[key >= pageIndex ? key + 1 : key] = value;
       } else {
-        if (key == pageIndex) {
-          // Skip deleted page
-        } else {
+        if (key != pageIndex) {
           newHistory[key > pageIndex ? key - 1 : key] = value;
         }
       }
@@ -135,15 +140,12 @@ class ImageController extends ChangeNotifier {
       if (isAdd) {
         newUndoStack[key >= pageIndex ? key + 1 : key] = value;
       } else {
-        if (key == pageIndex) {
-          // Skip deleted page
-        } else {
+        if (key != pageIndex) {
           newUndoStack[key > pageIndex ? key - 1 : key] = value;
         }
       }
     });
 
-    // Update maps
     _imageBoxes
       ..clear()
       ..addAll(newImageBoxes);
@@ -154,7 +156,6 @@ class ImageController extends ChangeNotifier {
       ..clear()
       ..addAll(newUndoStack);
 
-    // Adjust current page
     if (!isAdd && _currentPage > pageIndex) {
       _currentPage -= 1;
     } else if (isAdd && _currentPage >= pageIndex) {
@@ -165,24 +166,24 @@ class ImageController extends ChangeNotifier {
   }
 }
 
-// ✅ Image Box Class
+/// Represents an image with position, size, and rotation properties.
 class ImageBox {
   Offset position;
   double width;
   double height;
   ui.Image image;
-  double rotation; // ✅ New rotation field
+  double rotation;
 
   ImageBox({
     required this.position,
     required this.width,
     required this.height,
     required this.image,
-    this.rotation = 0.0, // ✅ Default rotation
+    this.rotation = 0.0,
   });
 }
 
-// ✅ Image Action for Undo/Redo
+/// Action model for managing undo/redo of images.
 class ImageAction {
   final ImageBox imageBox;
   final bool isAdd;
@@ -190,8 +191,10 @@ class ImageAction {
   ImageAction(this.imageBox, {required this.isAdd});
 }
 
+/// Custom painter to draw an image on a canvas.
 class ImagePainter extends CustomPainter {
   final ImageBox imageBox;
+
   ImagePainter(this.imageBox);
 
   @override

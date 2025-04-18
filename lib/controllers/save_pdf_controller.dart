@@ -12,13 +12,26 @@ import 'package:neworion_pdf_editor/controllers/highlight_controller.dart';
 import 'package:neworion_pdf_editor/controllers/image_controller.dart';
 import 'package:neworion_pdf_editor/controllers/text_box_controller.dart';
 import 'package:neworion_pdf_editor/controllers/underline_controller.dart';
-// import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
+/// A controller responsible for handling all save and manipulation
+/// operations on a PDF, including drawing, annotations, text boxes, 
+/// images, adding/removing pages, and saving the final document.
 class SavePdfController extends ChangeNotifier {
+  /// Tracks whether a save operation is currently in progress.
   bool isSaving = false;
 
+  /// Saves the current edits (drawings, images, annotations, and text boxes)
+  /// to a new PDF file.
+  ///
+  /// [pdfFile] - the original PDF file,
+  /// [totalPages] - number of pages in the document,
+  /// [context] - BuildContext for getting MediaQuery,
+  /// [drawingController], [imageController], [textBoxController], 
+  /// [highlightController], [underlineController] - various controllers 
+  /// managing different edit types,
+  /// [refresh] - callback to refresh UI if needed.
   Future<void> saveDrawing({
     required pdfFile,
     required int totalPages,
@@ -34,20 +47,19 @@ class SavePdfController extends ChangeNotifier {
       return;
     }
     try {
-      isSaving = true; // Start loader
+      isSaving = true; // Start loading
 
       final pdfDoc = PdfDocument(inputBytes: await pdfFile.readAsBytes());
 
       for (int i = 0; i < totalPages; i++) {
-        // Switch page and set drawing for the current page
+        // Set the current page in the drawing controller
         drawingController.setPage(i + 1);
         PdfPage page = pdfDoc.pages[i];
-        // Delay to allow page change to complete
-        // await Future.delayed(const Duration(milliseconds: 200));
-        // Get drawing data as image and add it to the PDF
+
+        // Allow time for page switch to complete
         await Future.delayed(const Duration(milliseconds: 200));
 
-        // ✅ Add Annotations (Highlight/Underline)
+        // --- Add highlight annotations ---
         for (AnnotationAction action
             in highlightController.getHighlightHistory[i + 1] ?? []) {
           if (action.isAdd) {
@@ -58,6 +70,8 @@ class SavePdfController extends ChangeNotifier {
             }
           }
         }
+
+        // --- Add underline annotations ---
         for (AnnotationAction action
             in underlineController.getUnderlineHistory[i + 1] ?? []) {
           if (action.isAdd) {
@@ -69,7 +83,7 @@ class SavePdfController extends ChangeNotifier {
           }
         }
 
-        // ✅ Add images to PDF
+        // --- Add images onto PDF page ---
         for (var imageBox in imageController.getAllImageBoxes()[i + 1] ?? []) {
           final imgData = await _convertImageToUint8List(imageBox.image);
           final PdfImage pdfImage = PdfBitmap(imgData);
@@ -78,75 +92,66 @@ class SavePdfController extends ChangeNotifier {
               page.getClientSize().width / MediaQuery.of(context).size.width;
           final double scaleFactorY =
               page.getClientSize().height /
-              (MediaQuery.of(context).size.width *
-                  1.414); // Aspect ratio correction
+              (MediaQuery.of(context).size.width * 1.414);
 
-          // Corrected position and dimensions with scaling
           double scaledX = imageBox.position.dx * scaleFactorX;
           double scaledY = imageBox.position.dy * scaleFactorY;
           double scaledWidth = imageBox.width * scaleFactorX;
           double scaledHeight = imageBox.height * scaleFactorY;
 
-          // ✅ Save the current graphics state
+          // Save the current graphics state before transformations
           page.graphics.save();
 
-          // ✅ Apply translation and rotation correctly
+          // Apply rotation and translation
           page.graphics.translateTransform(
             scaledX + scaledWidth / 2,
             scaledY + scaledHeight / 2,
           );
-
-          // ✅ Apply rotation (in degrees, converted to radians)
           page.graphics.rotateTransform(imageBox.rotation * (180 / pi));
 
-          // ✅ Draw the rotated image with corrected bounds
+          // Draw the image
           page.graphics.drawImage(
             pdfImage,
             Rect.fromLTWH(
-              (-scaledWidth / 2) + 14, // Move to center before drawing
+              (-scaledWidth / 2) + 14,
               (-scaledHeight / 2) + 14,
               scaledWidth,
               scaledHeight,
             ),
           );
 
-          // ✅ Restore original graphics state
+          // Restore the graphics state
           page.graphics.restore();
         }
 
-        // Get drawing data as image and add it to the PDF
+        // --- Add freehand drawing on the PDF page ---
         ByteData? imageData = await drawingController.getImageData(i + 1);
         if (imageData != null) {
           final PdfImage image = PdfBitmap(imageData.buffer.asUint8List());
 
-          // Get page dimensions
           final double pageWidth = page.getClientSize().width;
           final double pageHeight = page.getClientSize().height;
 
-          // Draw the captured image on the respective page
           page.graphics.drawImage(
             image,
             Rect.fromLTWH(0, 0, pageWidth, pageHeight),
           );
         }
 
-        // ✅ Draw text boxes on the PDF
+        // --- Add text boxes on the PDF page ---
         for (TextBox textBox
             in textBoxController.getAllTextBoxes()[i + 1] ?? []) {
           final double scaleFactorX =
               page.getClientSize().width / MediaQuery.of(context).size.width;
           final double scaleFactorY =
               page.getClientSize().height /
-              (MediaQuery.of(context).size.width *
-                  1.414); // Adjust for aspect ratio
+              (MediaQuery.of(context).size.width * 1.414);
 
-          // Properly manage text position with corrected offsets and scaling
           double scaledX = textBox.position.dx * scaleFactorX;
           double scaledY = textBox.position.dy * scaleFactorY;
           double scaledWidth = textBox.width * scaleFactorX;
           double scaledHeight = textBox.height * scaleFactorY;
 
-          // Draw text with corrected bounds and alignment
           page.graphics.drawString(
             textBox.text,
             PdfStandardFont(PdfFontFamily.helvetica, textBox.fontSize),
@@ -158,7 +163,7 @@ class SavePdfController extends ChangeNotifier {
               ),
             ),
             bounds: Rect.fromLTWH(
-              scaledX + 10, // Added padding to avoid edge cutoff
+              scaledX + 10, // Padding for better text visibility
               scaledY + 10,
               scaledWidth,
               scaledHeight,
@@ -171,29 +176,29 @@ class SavePdfController extends ChangeNotifier {
         }
       }
 
-      // Save updated PDF
+      // --- Save the modified PDF file ---
       final output = await getTemporaryDirectory();
       final String originalName = pdfFile.path.split('/').last.split('.').first;
       final String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-
-      // Create new file name with timestamp
       final String savedPath = '${output.path}/${originalName}_$timestamp.pdf';
       final file = File(savedPath);
 
       await file.writeAsBytes(await pdfDoc.save());
       pdfDoc.dispose();
 
-      Navigator.pop(context, file); // Return saved file to previous screen
+      // Pop with result file
+      Navigator.pop(context, file);
 
-      // Open the saved PDF
+      // Optionally, you can open the saved file
       // OpenFile.open(savedPath);
     } catch (e) {
       debugPrint('Error while saving drawing and text: $e');
     } finally {
-      isSaving = false; // Stop loader
+      isSaving = false; // End loading
     }
   }
 
+  /// Converts a [ui.Image] into a [Uint8List] for PDF embedding.
   Future<Uint8List> _convertImageToUint8List(ui.Image image) async {
     final ByteData? byteData = await image.toByteData(
       format: ui.ImageByteFormat.png,
@@ -201,6 +206,9 @@ class SavePdfController extends ChangeNotifier {
     return byteData!.buffer.asUint8List();
   }
 
+  /// Adds a blank page at the given [pageIndex] in the PDF.
+  ///
+  /// Returns the updated file if successful, or null otherwise.
   Future<File?> addBlankPageAt(int pageIndex, File pdfFile) async {
     final pdfDoc = PdfDocument(inputBytes: await pdfFile.readAsBytes());
     if (pageIndex < 0 || pageIndex > pdfDoc.pages.count) {
@@ -208,24 +216,24 @@ class SavePdfController extends ChangeNotifier {
       return null;
     }
 
-    // ✅ Get size of the first page to maintain consistent dimensions
     final Size pageSize = Size(
       pdfDoc.pages[0].getClientSize().width,
       pdfDoc.pages[0].getClientSize().height,
     );
 
-    // ✅ Insert a blank page at the specified index
     pdfDoc.pages.insert(pageIndex, pageSize);
 
     return await saveFile(pdfDoc: pdfDoc, addTimestap: false, pdfFile: pdfFile);
   }
 
+  /// Removes the page at [currentPage] (1-based index) from the PDF.
+  ///
+  /// Returns the updated file if successful, or null otherwise.
   Future<File?> removePage(int currentPage, File pdfFile) async {
     final PdfDocument pdfDoc = PdfDocument(
       inputBytes: await pdfFile.readAsBytes(),
     );
 
-    // Remove the selected page
     if (pdfDoc.pages.count > 1) {
       pdfDoc.pages.removeAt(currentPage - 1);
 
@@ -234,6 +242,9 @@ class SavePdfController extends ChangeNotifier {
     return null;
   }
 
+  /// Saves the modified [pdfDoc] either with or without a timestamp.
+  ///
+  /// [addTimestap] decides whether to append a timestamp to the filename.
   Future<File?> saveFile({
     bool addTimestap = false,
     required File pdfFile,
@@ -243,7 +254,6 @@ class SavePdfController extends ChangeNotifier {
     final String originalName = pdfFile.path.split('/').last.split('.').first;
 
     String savedPath = "";
-    // Create new file name with timestamp
     if (addTimestap) {
       final String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
       savedPath = '${output.path}/${originalName}_$timestamp.pdf';

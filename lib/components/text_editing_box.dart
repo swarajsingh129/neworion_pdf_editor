@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:neworion_pdf_editor/components/colorPicker.dart';
+import 'package:neworion_pdf_editor/components/color_picker.dart';
 import 'package:neworion_pdf_editor/controllers/text_box_controller.dart'
     as opdf;
 
