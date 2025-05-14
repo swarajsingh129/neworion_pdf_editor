@@ -1,8 +1,7 @@
 name: neworion_pdf_editor
 description: Discontinued 
-version: 0.0.6
+version: 0.0.7
 repository: https://github.com/yourusername/neworion_pdf_editor
-license: BSD-3-Clause
 
 environment:
   sdk: ^3.7.2
